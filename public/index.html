@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hola Mundo</title>
+  <title>Mi aplicacion con Sockets</title>
   <!-- Bootstrap CSS en línea -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <!-- Estilos personalizados -->
@@ -11,11 +12,15 @@
     body {
       background-color: #f0f0f0;
     }
+
     .navbar-custom {
-      background-color: #6c757d; /* Gris */
+      background-color: #6c757d;
+      /* Gris */
     }
+
     .footer-custom {
-      background-color: #6f42c1; /* Morado */
+      background-color: #6f42c1;
+      /* Morado */
       color: white;
       text-align: center;
       padding: 20px 0;
@@ -25,13 +30,15 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
     <div class="container">
       <a class="navbar-brand" href="#">Hola Mundo</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -50,6 +57,9 @@
       </div>
     </div>
   </nav>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/server/main.js"></script>
 
   <!-- Contenido principal -->
   <div class="container mt-5">
@@ -74,4 +84,5 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
+
 </html>
