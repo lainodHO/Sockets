@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 const path = require('path');
-
 const PORT = process.env.PORT || 3003;
 const app = express();
 const server = http.createServer(app);
@@ -15,9 +14,19 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(publicPath, 'index.html'));
 });
 
+// main.js (servidor)
 io.on('connection', function (socket) {
     console.log('Alguien se ha conectado con socket');
+
+    // Manejar el evento 'prueba' enviado desde el cliente
+    socket.on('prueba', function (mensaje) {
+        console.log('Mensaje recibido del cliente:', mensaje);
+
+        // Emitir un evento 'respuesta' de vuelta al cliente
+        socket.emit('respuesta', '¡Hola cliente! Soy el servidor.');
+    });
 });
+
 
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);

@@ -1,0 +1,19 @@
+body {
+    background-color: #f0f0f0;
+  }
+
+  .navbar-custom {
+    background-color: #6c757d;
+    /* Gris */
+  }
+
+  .footer-custom {
+    background-color: #6f42c1;
+    /* Morado */
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+  }

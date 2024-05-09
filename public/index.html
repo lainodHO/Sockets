@@ -8,27 +8,7 @@
   <!-- Bootstrap CSS en línea -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <!-- Estilos personalizados -->
-  <style>
-    body {
-      background-color: #f0f0f0;
-    }
-
-    .navbar-custom {
-      background-color: #6c757d;
-      /* Gris */
-    }
-
-    .footer-custom {
-      background-color: #6f42c1;
-      /* Morado */
-      color: white;
-      text-align: center;
-      padding: 20px 0;
-      position: fixed;
-      width: 100%;
-      bottom: 0;
-    }
-  </style>
+  <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -58,11 +38,34 @@
     </div>
   </nav>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-  </script>
   <script src="/Sockets/public/mainClient.js"></script>
+
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const socket = io();
+
+      // Función para conectar con el servidor
+      function conectarServidor() {
+        socket.connect();
+        console.log('Conexión con el servidor establecida');
+
+        // Emitir un evento al servidor para probar la comunicación
+        socket.emit('prueba', '¡Hola servidor!');
+      }
+
+      // Escuchar un evento del servidor
+      socket.on('respuesta', function (mensaje) {
+        console.log('Respuesta del servidor:', mensaje);
+      });
+
+      // Cuando se presiona el botón, conectar con el servidor
+      document.getElementById('conectarBtn').addEventListener('click', conectarServidor);
+    });
+  </script>
+
 
   <!-- Contenido principal -->
   <div class="container mt-5">
@@ -70,7 +73,8 @@
       <h1 class="display-4 text-primary">¡Hola Mundo!</h1>
       <p class="lead">Bienvenido a mi página web con Bootstrap.</p>
       <hr class="my-4">
-      <p>Esta es una página de demostración con colores azul, morado y gris.</p>
+      <p>Esta es una página de demostración utilizando sockets.</p>
+      <button id="conectarBtn">Socket para conectar desde el cliente con el servidor</button>
     </div>
   </div>
 
