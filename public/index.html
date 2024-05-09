@@ -38,11 +38,11 @@
     </div>
   </nav>
 
+  <div id="respuesta">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/Sockets/public/mainClient.js"></script>
 
-  
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const socket = io();
@@ -55,16 +55,11 @@
         // Emitir un evento al servidor para probar la comunicación
         socket.emit('prueba', '¡Hola servidor!');
       }
-
-      // Escuchar un evento del servidor
-      socket.on('respuesta', function (mensaje) {
-        console.log('Respuesta del servidor:', mensaje);
-      });
-
       // Cuando se presiona el botón, conectar con el servidor
       document.getElementById('conectarBtn').addEventListener('click', conectarServidor);
     });
   </script>
+</div>
 
 
   <!-- Contenido principal -->

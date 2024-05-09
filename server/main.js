@@ -23,7 +23,11 @@ io.on('connection', function (socket) {
         console.log('Mensaje recibido del cliente:', mensaje);
 
         // Emitir un evento 'respuesta' de vuelta al cliente
-        socket.emit('respuesta', '¡Hola cliente! Soy el servidor.');
+        socket.emit('respuesta',{
+            id:1,
+            texto:"¡Hola cliente! Soy el servidor.",
+            autor:"Daniel Hernadez Olague"} 
+        );
     });
 });
 

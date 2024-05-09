@@ -1,6 +1,26 @@
 {
+  "name": "socket",
+  "version": "1.0.3",
+  "description": "Este es mi primer proyecto usando sockets",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lainodHO/API-REST.git"
+  },
+  "author": "Daniel Hernández Olague",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lainodHO/API-REST/issues"
+  },
+  "homepage": "https://github.com/lainodHO/API-REST#readme",
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
+  },
+  "bin": {
+    "api-docker": "./app.js"
+  },
+  "scripts": {
+    "test": "jest"
   }
 }
