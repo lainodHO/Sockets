@@ -14,22 +14,33 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(publicPath, 'index.html'));
 });
 
-// main.js (servidor)
+// Objeto de mensaje inicial
+const initialMessage = {
+    id: 1,
+    texto: "¡Hola cliente! Soy un mensaje del servidor.",
+    autor: "Daniel Hernández Olague"
+};
+
+// Inicializar el arreglo de mensajes con el mensaje inicial
+const messages = [initialMessage];
+
+// Emitir un evento 'message' de vuelta al cliente cuando se conecte
 io.on('connection', function (socket) {
     console.log('Alguien se ha conectado con socket');
+    
+    // Emitir el mensaje inicial al cliente cuando se conecta
+    socket.emit("message", messages);
 
-    // Manejar el evento 'prueba' enviado desde el cliente
-    socket.on('prueba', function (mensaje) {
-        console.log('Mensaje recibido del cliente:', mensaje);
-
-        // Emitir un evento 'respuesta' de vuelta al cliente
-        socket.emit('respuesta',{
-            id:1,
-            texto:"¡Hola cliente! Soy el servidor.",
-            autor:"Daniel Hernadez Olague"} 
-        );
+    // Manejar el evento 'nuevo-message' enviado por el cliente
+    socket.on("new-message", function(data) {
+        // Agregar el nuevo mensaje al arreglo de mensajes
+        messages.push(data);
+        
+        // Emitir el arreglo de mensajes actualizado de vuelta a todos los clientes
+        io.emit('respuesta', messages);
     });
 });
+
 
 
 server.listen(PORT, () => {

@@ -6,23 +6,28 @@ var socket = io.connect('http://localhost:3003/');
     console.log('Respuesta del servidor:', data);
   });
 
+// Manejar el evento 'respuesta' del servidor
+socket.on('respuesta', function(messages){
+  var messageList = document.getElementById('message-list');
+  messageList.innerHTML = ''; // Limpiar la lista de mensajes antes de actualizarla
+  
+  // Iterar sobre los mensajes y agregarlos al HTML
+  messages.forEach(function(message){
+      var html = `<div class="message">
+                      <strong>${message.autor}</strong>
+                      <em>${message.texto}</em>
+                  </div>`;
+      messageList.innerHTML += html;
+  });
+});
 
-  //Esto es un socket renderizado para enviar la respuesta de mi servidor
-  function render(data){
-    var html = `<div id="respuesta">
-                    <strong>${data.autor}</strong>
-                    <em>${data.texto}</em>
-                </div>`;
-    document.getElementById('respuesta').innerHTML = html;
-}
-
-
-  //Esto es un socket renderizado para enviar la respuesta de mi servidor
-  function addMessage(e){
-    var payload = {
-        autor: document.getElementById('autor').value,
-        texto: document.getElementById('texto').value
-    };
-    socket.emit('new-message', payload);
-    return false;
+// Función para enviar un nuevo mensaje al servidor
+function addMessage(e){
+  var payload = {
+      autor: document.getElementById('username').value,
+      texto: document.getElementById('texto').value
+  };
+  socket.emit('new-message', payload);
+  document.getElementById('texto').value = ''; // Limpiar el campo de texto después de enviar el mensaje
+  return false; // Para evitar que el formulario se envíe
 }

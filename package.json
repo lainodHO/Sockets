@@ -1,6 +1,6 @@
 {
   "name": "socket",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Este es mi primer proyecto usando sockets",
   "main": "app.js",
   "repository": {

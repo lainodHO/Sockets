@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi aplicacion con Sockets</title>
+  <title>Mi aplicación con Sockets</title>
   <!-- Bootstrap CSS en línea -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <!-- Estilos personalizados -->
@@ -38,11 +38,40 @@
     </div>
   </nav>
 
-  <div id="respuesta">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/Sockets/public/mainClient.js"></script>
+  <!-- Contenido principal -->
+  <div class="container mt-5">
+    <div class="jumbotron">
+      <h1 class="display-4 text-primary">¡Hola Mundo!</h1>
+      <p class="lead">Bienvenido a mi página web con Bootstrap.</p>
+      <hr class="my-4">
+      <p>Esta es una página de demostración utilizando sockets.</p>
+      <button id="conectarBtn">Socket para conectar desde el cliente con el servidor</button>
 
+      <hr class="my-4">
+      
+      <div id="message-list"></div>
+      <form onsubmit="return addMessage(this);">
+          <input type="text" id="username" placeholder="Tu nombre">
+          <input type="text" id="texto" placeholder="Cuéntanos algo">
+          <input type="submit" value="Enviar">
+      </form>
+      
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer-custom">
+    <div class="container">
+      <span>&copy; 2024 Hola Mundo</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const socket = io();
@@ -59,31 +88,7 @@
       document.getElementById('conectarBtn').addEventListener('click', conectarServidor);
     });
   </script>
-</div>
-
-
-  <!-- Contenido principal -->
-  <div class="container mt-5">
-    <div class="jumbotron">
-      <h1 class="display-4 text-primary">¡Hola Mundo!</h1>
-      <p class="lead">Bienvenido a mi página web con Bootstrap.</p>
-      <hr class="my-4">
-      <p>Esta es una página de demostración utilizando sockets.</p>
-      <button id="conectarBtn">Socket para conectar desde el cliente con el servidor</button>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="footer-custom">
-    <div class="container">
-      <span>&copy; 2024 Hola Mundo</span>
-    </div>
-  </footer>
-
-  <!-- Bootstrap JS en línea -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="mainClient.js"></script>
 
 </body>
 
