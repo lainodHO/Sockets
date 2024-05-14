@@ -18,6 +18,10 @@ socket.on('respuesta', function(messages){
                       <em>${message.texto}</em>
                   </div>`;
       messageList.innerHTML += html;
+         // Envía los datos del mensaje como console.log
+    socket.emit('nuevoMensaje', { autor: message.autor, texto: message.texto });
+    console.log('Mensaje enviado al servidor:', { autor: message.autor, texto: message.texto });
+    
   });
 });
 

@@ -14,6 +14,9 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(publicPath, 'index.html'));
 });
 
+// Variable para llevar el conteo
+let contadorConexiones = 0;
+
 // Objeto de mensaje inicial
 const initialMessage = {
     id: 1,
@@ -26,7 +29,9 @@ const messages = [initialMessage];
 
 // Emitir un evento 'message' de vuelta al cliente cuando se conecte
 io.on('connection', function (socket) {
+    contadorConexiones++; // Incrementar el contador
     console.log('Alguien se ha conectado con socket');
+    console.log('Número de conexiones: ' + contadorConexiones); // Imprimir el contador
     
     // Emitir el mensaje inicial al cliente cuando se conecta
     socket.emit("message", messages);
@@ -42,9 +47,8 @@ io.on('connection', function (socket) {
 });
 
 
-
 server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
+    console.log(`Server running at http://192.168.1.121:${PORT}/`);
 });
 
 module.exports = app;
