@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Manejadro de Base de Datos</title>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="Free HTML Templates" name="keywords">
+  <meta content="Free HTML Templates" name="description">
+
+  <!-- Favicon -->
+  <link href="img/favicon.ico" rel="icon">
+
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Icon Font Stylesheet -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Libraries Stylesheet -->
+  <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+  <link href="lib/animate/animate.min.css" rel="stylesheet">
+
+  <!-- Customized Bootstrap Stylesheet -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Template Stylesheet -->
+  <link href="css/style.css" rel="stylesheet">
+
+  <!-- SweetAlert Stylesheet -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@10" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    /* Navbar Styles */
+    .navbar {
+      background-color: #343a40;
+    }
+
+    .navbar-brand {
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .navbar-nav .nav-link {
+      color: #ffffff;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #f8f9fa;
+    }
+
+    /* Footer Styles */
+    footer {
+      background-color: #343a40;
+      color: #ffffff;
+      padding: 20px 0;
+      text-align: center;
+    }
+    .btn-custom-purple {
+    background-color: purple;
+    border-color: purple;
+    color: white;
+}
+
+.btn-custom-purple:hover {
+    background-color: #7e57c2; /* Cambia el color cuando se pasa el mouse sobre el botón */
+    border-color: #7e57c2;
+}
+  </style>
+
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0">
+    <a class="navbar-brand" href="/index.html">Manejador de Usuarios</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/insetar.html">Insertar <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/editar.html">Editar</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/eliminar.html">Eliminar</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/contraseña.html">Contraseña</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <span id="loggedInUser" class="nav-link"></span> <!-- Mostrará el nombre del usuario -->
+      </form>
+      <form class="form-inline my-2 my-lg-0">
+        <button class="btn btn-outline-danger my-2 my-sm-0" type="button" onclick="logout()">Cerrar Sesión</button>
+      </form>
+    </div>
+  </nav>
+  <br>
+  <br>
+  <br>
+  <div class="container mt-5">
+    <h1>Manejador de Usuarios</h1>
+    <hr>
+    <!-- Add User Form -->
+    <h2>Agregar Usuario Con tres Hashs</h2>
+    <form id="addUserForm">
+      <div class="form-group">
+        <label for="userName">Nombre:</label>
+        <br>
+        <input type="text" class="form-control" id="userName" name="nombre" required>
+      </div>
+
+      <div class="form-group">
+        <label for="fullName">Contraseña:</label>
+        <input type="password" class="form-control" id="fullName" name="contraseña" required>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-custom-purple">Agregar Usuario</button>
+    </form>
+    <hr>
+    <!-- HTML para el formulario de edición de usuario -->
+    <h2>Ver Contrseañas del Usuario</h2>
+    <form id="editUserForm">
+      <div class="form-group">
+        <label for="editUserId">ID:</label>
+        <input type="text" class="form-control" id="editUserId" name="id" required readonly>
+      </div>
+      <div class="form-group">
+        <label for="editUserName">Nombre:</label>
+        <input type="text" class="form-control" id="editUserName" name="nombre" required readonly>
+      </div>
+      <div class="form-group">
+        <label for="editFullName">Contraseña (bcryptjs Hash):</label>
+        <input type="text" class="form-control" id="editFullName" name="contrasea" required readonly>
+      </div>
+      <div class="form-group">
+        <label for="editMD5">Contraseña (MD5 Hash):</label>
+        <input type="text" class="form-control" id="editMD5" name="md5_hash" required readonly>
+      </div>
+      <div class="form-group">
+        <label for="editSHA256">Contraseña (SHA256 Hash):</label>
+        <input type="text" class="form-control" id="editSHA256" name="sha256_hash" required readonly>
+      </div>
+      <div class="form-group">
+        <label for="editSHA1">Contraseña (SHA1 Hash):</label>
+        <input type="text" class="form-control" id="editSHA1" name="sha1_hash" required readonly>
+      </div>
+    </form>
+
+
+  </div>
+  <hr>
+  <div class="container mt-5">
+    <h2>Lista de Usuarios con tres diferentes de hash</h2>
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar usuario...">
+    <ul id="userList" class="list-group">
+      <li class="list-group-item">Usuario 1</li>
+      <li class="list-group-item">Usuario 2</li>
+      <li class="list-group-item">Usuario 3</li>
+      <!-- Agrega más elementos de la lista según sea necesario -->
+    </ul>
+  </div>
+
+  <!-- Bootstrap JS and Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- Filtros  -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const searchInput = document.getElementById("searchInput");
+      const userList = document.getElementById("userList").getElementsByTagName("li");
+
+      searchInput.addEventListener("input", function () {
+        const searchTerm = this.value.toLowerCase();
+
+        Array.from(userList).forEach(function (user) {
+          const userName = user.textContent.toLowerCase();
+          if (userName.includes(searchTerm)) {
+            user.style.display = "block";
+          } else {
+            user.style.display = "none";
+          }
+        });
+      });
+    });
+  </script>
+
+  <!-- Inicio de sesion  -->
+  <script>
+    // Función para cerrar sesión
+    function logout() {
+      // Elimina la información de inicio de sesión almacenada en localStorage
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('accessToken'); // Elimina el token de acceso
+      localStorage.removeItem('loggedInUser'); // Elimina el nombre de usuario
+      // Notificar al usuario que se cerró la sesión
+      Swal.fire({
+        icon: 'success',
+        title: 'Sesión cerrada',
+        text: 'Has cerrado sesión exitosamente.',
+        allowOutsideClick: false, // Evita que el usuario cierre la alerta al hacer clic fuera de ella
+        confirmButtonText: 'Iniciar sesión nuevamente'
+      }).then(() => {
+        // Después de cerrar sesión, redirige a la página de inicio
+        window.location.href = '/index.html';
+      });
+    }
+
+    // Función para mostrar la ventana emergente de inicio de sesión
+    function showLoginPopup() {
+      Swal.fire({
+        title: 'Inicio de Sesión',
+        html:
+          '<input id="username" class="swal2-input" placeholder="Nombre de usuario">' +
+          '<input id="password" type="password" class="swal2-input" placeholder="Contraseña">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Iniciar sesión',
+        cancelButtonText: 'Cancelar',
+        allowOutsideClick: false, // Evita que la ventana se cierre al hacer clic fuera de ella
+        preConfirm: () => {
+          const username = Swal.getPopup().querySelector('#username').value;
+          const password = Swal.getPopup().querySelector('#password').value;
+          return { username: username, password: password };
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Envía las credenciales al servidor para validar la sesión
+          axios.post('/login', result.value)
+            .then(function (response) {
+              console.log('Login successful:', response.data);
+              // Almacena el token de autenticación en localStorage
+              localStorage.setItem('accessToken', response.data.token);
+              // Marca al usuario como autenticado
+              localStorage.setItem('isLoggedIn', true); // Almacena el estado de inicio de sesión en localStorage
+              localStorage.setItem('loggedInUser', result.value.username); // Almacena el nombre de usuario en localStorage
+              // Muestra un mensaje de éxito y cierra la ventana emergente
+              Swal.fire({
+                icon: 'success',
+                title: 'Inicio de sesión exitoso',
+                showConfirmButton: false,
+                timer: 1500 // Cierra automáticamente la ventana emergente después de 1.5 segundos
+              }).then(() => {
+                // Redirige a la página de inicio después del inicio de sesión exitoso
+                window.location.href = '/index.html';
+              });
+            })
+            .catch(function (error) {
+              console.error('Error durante el inicio de sesión:', error.response);
+              // Muestra un mensaje de error si el inicio de sesión falla
+              Swal.fire({
+                icon: 'error',
+                title: 'Error de inicio de sesión',
+                text: 'Nombre de usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.'
+              }).then(() => {
+                // Vuelve a mostrar la ventana emergente de inicio de sesión
+                showLoginPopup();
+              });
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          // Si el usuario cancela el inicio de sesión, redirige a la página de inicio
+          window.location.href = '/index.html';
+        }
+      });
+    }
+
+    // Función para verificar si el usuario ha iniciado sesión
+    function checkLoginStatus() {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        showLoginPopup(); // Si el usuario no ha iniciado sesión, muestra la ventana emergente de inicio de sesión
+      } else {
+        // Si el usuario ha iniciado sesión, mostrar su nombre en el navbar
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        document.getElementById('loggedInUser').textContent = `Bienvenido, ${loggedInUser}`;
+      }
+    }
+
+    // Función para mostrar la ventana emergente de inicio de sesión al cargar la página
+    window.addEventListener('DOMContentLoaded', function () {
+      checkLoginStatus(); // Verifica el estado de inicio de sesión cuando se carga la página
+    });
+  </script>
+
+  <!-- Script para agregar un nuevo usuario -->
+  <script>
+    document.getElementById('addUserForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const userData = {};
+      let hasSpecialCharacters = false;
+
+      formData.forEach(function (value, key) {
+        const specialCharsRegex = /[&'";`#%;<>\\|$\^~?!@()\[\]{}_\-+=,.:]/;
+
+        if (specialCharsRegex.test(value)) {
+          hasSpecialCharacters = true;
+          return;
+        }
+
+        if (key === 'contraseña') {
+          userData['contrasea'] = value;
+        } else {
+          userData[key] = value;
+        }
+      });
+
+      if (hasSpecialCharacters) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No puedes ingresar caracteres especiales en los campos.'
+        });
+        return;
+      }
+
+      axios.post('/users/hashs', userData, {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken')
+        }
+      })
+        .then(function (response) {
+          console.log('User added successfully:', response.data);
+          document.getElementById('userName').value = '';
+          document.getElementById('fullName').value = '';
+          Swal.fire({
+            icon: 'success',
+            title: 'Usuario agregado',
+            text: 'El usuario ha sido agregado exitosamente.'
+          }).then(() => {
+        // Recarga la página después de que se completa la solicitud
+        window.location.reload();
+    });
+        })
+        .catch(function (error) {
+          console.error('Error adding user:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al agregar el usuario. Por favor, inténtalo de nuevo.'
+          });
+        });
+    });
+  </script>
+
+  <!-- gestión de usuarios -->
+  <script>
+    // Function to fetch and display users
+    function fetchUsers() {
+      axios.get('/users', {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      })
+        .then(function (response) {
+          const users = response.data;
+          const userList = document.getElementById('userList');
+          userList.innerHTML = '';
+          users.forEach(function (user) {
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.innerHTML = `
+          <strong>ID:</strong> ${user.id} - 
+          <strong>Nombre:</strong> ${user.nombre} - 
+          <strong>Contraseña:</strong> ********  -
+          <button class="btn btn-sm mx-2" onclick="editUser(${user.id})" style="background-color: purple; color: white;">Mostrar Contraseñas</button>
+        `;
+            userList.appendChild(li);
+          });
+        })
+        .catch(function (error) {
+          console.error('Error fetching users:', error);
+          // Mostrar alerta de error con SweetAlert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al obtener los usuarios. Por favor, inténtalo de nuevo.'
+          });
+        });
+    }
+
+    // Function to populate edit form with user data
+    function editUser(userId) {
+      // Retrieve user data by ID and populate the edit form fields
+      axios.get(`/users/${userId}`, {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      })
+        .then(function (response) {
+          const user = response.data[0]; // Assuming the response is an array with a single user object
+          document.getElementById('editUserId').value = user.id;
+          document.getElementById('editUserName').value = user.nombre;
+          // Set original values for comparison
+          document.getElementById('editUserName').dataset.originalValue = user.nombre;
+
+          // Mostrar los diferentes hashes de la contraseña
+          document.getElementById('editMD5').value = user.md5_hash;
+          document.getElementById('editSHA256').value = user.sha256_hash;
+          document.getElementById('editSHA1').value = user.sha1_hash;
+        })
+        .catch(function (error) {
+          console.error('Error fetching user data:', error);
+          // Mostrar alerta de error con SweetAlert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al obtener los datos del usuario. Por favor, inténtalo de nuevo.'
+          });
+        });
+    }
+
+    // Function to update user data
+    function updateUser() {
+      const userId = document.getElementById('editUserId').value;
+      const userNameInput = document.getElementById('editUserName');
+
+      // Get current values
+      const currentUserName = userNameInput.value.trim();
+
+      // Check if fields are empty or contain only spaces
+      if (currentUserName === '') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Por favor, completa todos los campos.'
+        });
+        return;
+      }
+
+      // Check if data has been modified
+      const originalUserName = userNameInput.dataset.originalValue.trim();
+
+      if (currentUserName === originalUserName) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se han realizado cambios en los datos del usuario.'
+        });
+        return;
+      }
+
+      // Expresión regular para buscar caracteres especiales
+      const specialCharsRegex = /[&'";`#%;<>\\|$\^~?!@()\[\]{}_\-+=,.:]/;
+
+      // Si se encuentra un caracter especial, mostrar alerta y no enviar datos
+      if (specialCharsRegex.test(currentUserName)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No puedes ingresar caracteres especiales en los campos.'
+        });
+        return;
+      }
+
+      // If data has been modified, proceed with the update
+      const userData = {
+        nombre: currentUserName
+      };
+
+      axios.put(`/users/${userId}`, userData, {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      })
+        .then(function (response) {
+          console.log('User updated successfully:', response.data);
+          fetchUsers(); // Refresh the user list after update
+          // Clear form fields after editing user
+          userNameInput.value = '';
+          // Show success alert with SweetAlert
+          Swal.fire({
+            icon: 'success',
+            title: 'Usuario actualizado',
+            text: 'Los datos del usuario han sido actualizados exitosamente.'
+          });
+        })
+        .catch(function (error) {
+          console.error('Error updating user:', error);
+          // Show error alert with SweetAlert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al actualizar el usuario. Por favor, inténtalo de nuevo.'
+          });
+        });
+    }
+
+    // Initial fetch of users
+    fetchUsers();
+  </script>
+
+  <!-- Función para editar un usuario -->
+  <script>
+    // Función para editar un usuario
+    function editUser(userId) {
+      // Muestra una ventana emergente solicitando la contraseña del usuario
+      Swal.fire({
+        title: 'Confirmar contraseña',
+        html: '<input id="password" type="password" class="swal2-input" placeholder="Contraseña">',
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+          const password = Swal.getPopup().querySelector('#password').value;
+          return password;
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Una vez que se confirma la contraseña, se puede proceder a la edición del usuario
+          const enteredPassword = result.value;
+          // Enviar la contraseña al servidor para su validación
+          axios.post(`/users/confirm-password/${userId}`, { password: enteredPassword }, {
+            headers: {
+              'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+            }
+          }) // Cambiada la ruta para enviar la contraseña
+            .then(function (response) {
+              // Si la contraseña es correcta, se puede proceder a la edición del usuario
+              fetchUserForEdit(userId); // Función para obtener los datos del usuario para editar
+            })
+            .catch(function (error) {
+              console.error('Error de verificación de contraseña:', error);
+              // Mostrar un mensaje de error si la contraseña es incorrecta
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Contraseña incorrecta. Por favor, inténtalo de nuevo.'
+              });
+            });
+        }
+      });
+    }
+
+    // Función para obtener los datos del usuario para editar
+    function fetchUserForEdit(userId) {
+      axios.get(`/users/${userId}`, {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      })
+        .then(function (response) {
+          const user = response.data[0];
+          // Rellenar los campos del formulario de edición con los datos del usuario
+          document.getElementById('editUserId').value = user.id;
+          document.getElementById('editUserName').value = user.nombre;
+          document.getElementById('editFullName').value = user.contrasea;
+          // Set original values for comparison
+          document.getElementById('editUserName').dataset.originalValue = user.nombre;
+          document.getElementById('editFullName').dataset.originalValue = user.contrasea;
+
+          // Mostrar los diferentes hashes de la contraseña
+          document.getElementById('editMD5').value = user.md5_hash;
+          document.getElementById('editSHA256').value = user.sha256_hash;
+          document.getElementById('editSHA1').value = user.sha1_hash;
+          // Set original values for comparison
+          document.getElementById('editMD5').dataset.originalValue = user.md5_hash;
+          document.getElementById('editSHA256').dataset.originalValue = user.sha256_hash;
+          document.getElementById('editSHA1').dataset.originalValue = user.sha1_hash;
+
+        })
+        .catch(function (error) {
+          console.error('Error obteniendo datos del usuario para editar:', error);
+          // Mostrar un mensaje de error si hay algún problema al obtener los datos del usuario
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al obtener los datos del usuario para editar. Por favor, inténtalo de nuevo.'
+          });
+        });
+    }
+
+    // Función para verificar si ambos campos han sido modificados
+    function validateFields() {
+      const userName = document.getElementById('editUserName').value;
+      const fullName = document.getElementById('editFullName').value;
+
+      const userNameOriginal = document.getElementById('editUserName').dataset.originalValue;
+      const fullNameOriginal = document.getElementById('editFullName').dataset.originalValue;
+
+      if (userName === userNameOriginal && fullName === fullNameOriginal) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No has modificado ningún campo.'
+        });
+        return false;
+      } else if (userName === userNameOriginal || fullName === fullNameOriginal) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Debes modificar ambos campos (nombre de usuario y contraseña).'
+        });
+        return false;
+      }
+
+      return true;
+    }
+  </script>
+
+<!-- Footer Start -->
+<div class="container-fluid bg-dark text-light mt-5 wow fadeInUp" data-wow-delay="0.1s">
+  <div class="container">
+    <div class="row gx-5">
+      <div class="col-lg-4 col-md-6 footer-about">
+        <div class="d-flex flex-column align-items-center justify-content-center text-center bg-primary p-3">
+          <a href="#" class="navbar-brand">
+            <h3 class="m-0 text-white"><i class="fa fa-user-tie me-2"></i>Descripción</h3>
+          </a>
+          <p class="mt-2 mb-3">"Manejador de Usuarios" es una aplicación web para gestionar usuarios de manera eficiente.</p>
+        </div>
+      </div>
+      <div class="col-lg-8 col-md-6">
+        <div class="row gx-5">
+          <div class="col-lg-6 col-md-6 pt-3">
+            <div class="section-title  position-relative section-title-sm pb-2 mb-3">
+              <h4 class="text-light mb-0">Contacto</h4>
+            </div>
+            <div class="d-flex flex-column mb-2">
+              <p class="mb-1"><i class="bi bi-geo-alt text-primary me-1"></i>Delicias, Chihuahua, México.</p>
+              <p class="mb-1"><i class="bi bi-envelope-open text-primary me-1"></i>daniel192412012@gmail.com</p>
+              <p class="mb-1"><i class="bi bi-telephone text-primary me-1"></i>+052-639-159-97-45</p>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 pt-3">
+            <div class="section-title position-relative section-title-sm pb-2 mb-3">
+              <h4 class="text-light mb-0">Enlaces</h4>
+            </div>
+            <div class="link-animated d-flex flex-column justify-content-start">
+              <a class="text-light mb-1" href="index.html"><i class="bi bi-arrow-right text-primary me-1"></i>Inicio</a>
+              <a class="text-light mb-1" href="insetar.html"><i class="bi bi-arrow-right text-primary me-1"></i>Insertar</a>
+              <a class="text-light mb-1" href="editar.html"><i class="bi bi-arrow-right text-primary me-1"></i>Editar</a>
+              <a class="text-light mb-1" href="eliminar.html"><i class="bi bi-arrow-right text-primary me-1"></i>Eliminar</a>
+              <a class="text-light mb-1" href="contraseña.html"><i class="bi bi-arrow-right text-primary me-1"></i>Contraseñas</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid text-white" style="background: #061429;">
+  <div class="container text-center">
+    <div class="row justify-content-end">
+      <div class="col-lg-8 col-md-6">
+        <div class="d-flex align-items-center justify-content-center" style="height: 50px;">
+          <p class="mb-0">&copy; <a class="text-white border-bottom" href="#">DHO</a>. Todos los derechos reservados © Daniel Hernández Company.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Footer End -->
+
+  <!-- SweetAlert Script -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+  <!-- JavaScript Libraries -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="lib/wow/wow.min.js"></script>
+  <script src="lib/easing/easing.min.js"></script>
+  <script src="lib/waypoints/waypoints.min.js"></script>
+  <script src="lib/counterup/counterup.min.js"></script>
+  <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+  <!-- Template Javascript -->
+  <script src="js/main.js"></script>
+
+</body>
+
+</html>
