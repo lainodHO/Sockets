@@ -41,7 +41,7 @@ routeConfig(app);
 
 // Handling not found routes
 app.use((req, res) => {
-    res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+    res.status(404).sendFile(path.join(__dirname, '../public', '404.html'));
 });
 
 
@@ -82,7 +82,7 @@ io.on('connection', function (socket) {
 
 // Crear servidor HTTPS
  // Cambia 3003 por el puerto que quieras
- app.listen(PORT, () => {
+ server.listen(PORT, () => {
      console.log(`Server running at http://localhost:${PORT}/`);
  });
  

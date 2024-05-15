@@ -32,8 +32,6 @@
   <!-- Template Stylesheet -->
   <link href="css/style.css" rel="stylesheet">
 
-  <!-- SweetAlert Stylesheet -->
-  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@10" rel="stylesheet">
 
   <!-- Custom Styles -->
   <style>
@@ -62,7 +60,6 @@
       padding: 20px 0;
       text-align: center;
     }
-    
   </style>
 
 </head>
@@ -77,16 +74,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="/insetar.html">Insertar <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/editar.html">Editar</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/eliminar.html">Eliminar</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/contraseña.html">Contraseña</a>
+          <a class="nav-link" href="/foro.html">Foro <span class="sr-only">(current)</span></a>
         </li>
       </ul>
       <form class="form-inline my-2 my-lg-0">
@@ -101,30 +89,73 @@
   <br>
   <br>
   <br>
-  <!-- Manejador de Usuarios -->
+
   <div class="container mt-5">
-    <h1>Daniel Hernández Olague</h1>
+    <!-- Add User Form -->
+    <h2>Agregar Usuario</h2>
+    <form id="addUserForm">
+      <div class="form-group">
+        <label for="userName">Nombre:</label>
+        <br>
+        <input type="text" class="form-control" id="userName" name="nombre" required>
+      </div>
+
+      <div class="form-group">
+        <label for="fullName">Contraseña:</label>
+        <input type="password" class="form-control" id="fullName" name="contraseña" required>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-primary">Agregar Usuario</button>
+    </form>
     <hr>
-    <div class="container mt-5">
-      <h2>Lista de Usuarios</h2>
-      <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar usuario...">
-      <ul id="userList" class="list-group">
-        <li class="list-group-item">Usuario 1</li>
-        <li class="list-group-item">Usuario 2</li>
-        <li class="list-group-item">Usuario 3</li>
-        <!-- Agrega más elementos de la lista según sea necesario -->
-      </ul>
-    </div>
-    <hr>
+    <br>
   </div>
 
+  <div class="container mt-5">
+    <h1>Manejador de Usuarios</h1>
+    <hr>
+    <h2>Lista de Usuarios</h2>
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar usuario...">
+    <ul id="userList" class="list-group">
+      <li class="list-group-item">Usuario 1</li>
+      <li class="list-group-item">Usuario 2</li>
+      <li class="list-group-item">Usuario 3</li>
+      <!-- Agrega más elementos de la lista según sea necesario -->
+    </ul>
+    <hr>
+    <br>
+  </div>
+
+  <div class="container mt-5">
+    <h1>Manejador de Usuarios</h1>
+    <!-- Edit User Form -->
+    <h2>Editar Usuario</h2>
+    <form id="editUserForm">
+      <div class="form-group">
+        <label for="editUserId">ID:</label>
+        <input type="text" class="form-control" id="editUserId" name="id" required readonly>
+      </div>
+      <div class="form-group">
+        <label for="editUserName">Nombre:</label>
+        <br>
+        <input type="text" class="form-control" id="editUserName" name="nombre" required>
+      </div>
+      <div class="form-group">
+        <label for="editFullName">Contraseña:</label>
+        <input type="text" class="form-control" id="editFullName" name="contrasea" required>
+      </div>
+      <br>
+      <button type="button" class="btn btn-primary" onclick="updateUser()">Guardar</button>
+    </form>
+    <hr>
+    <br>
+  </div>
+
+   <!-- JavaScript Functions-->
   <!-- Bootstrap JS and Axios -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-  <!-- SweetAlert Script -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-  <!-- Lista de Usuarios  -->
+  <!-- gestión de usuarios  -->
   <script>
     // Function to fetch and display users
     function fetchUsers() {
@@ -141,15 +172,22 @@
             const li = document.createElement('li');
             li.className = 'list-group-item';
             li.innerHTML = `
-          <strong>ID:</strong> ${user.id} - 
-          <strong>Nombre:</strong> ${user.nombre} - 
-          <strong>Contraseña:</strong> ********  -
-        `;
+            <strong>ID:</strong> ${user.id} - 
+            <strong>Nombre:</strong> ${user.nombre} - 
+            <strong>Contraseña:</strong> ********  -
+            <button class="btn btn-warning btn-sm mx-2" onclick="editUser(${user.id})">Editar</button>
+          `;
             userList.appendChild(li);
           });
         })
         .catch(function (error) {
           console.error('Error fetching users:', error);
+          // Mostrar alerta de error con SweetAlert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al obtener los usuarios. Por favor, inténtalo de nuevo.'
+          });
         });
     }
 
@@ -166,6 +204,9 @@
           document.getElementById('editUserId').value = user.id;
           document.getElementById('editUserName').value = user.nombre;
           document.getElementById('editFullName').value = user.contrasea;
+          // Set original values for comparison
+          document.getElementById('editUserName').dataset.originalValue = user.nombre;
+          document.getElementById('editFullName').dataset.originalValue = user.contrasea;
         })
         .catch(function (error) {
           console.error('Error fetching user data:', error);
@@ -181,9 +222,55 @@
     // Function to update user data
     function updateUser() {
       const userId = document.getElementById('editUserId').value;
+      const userNameInput = document.getElementById('editUserName');
+      const fullNameInput = document.getElementById('editFullName');
+
+      // Get current values
+      const currentUserName = userNameInput.value.trim();
+      const currentFullName = fullNameInput.value.trim();
+
+      // Check if fields are empty or contain only spaces
+      if (currentUserName === '' || currentFullName === '') {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Por favor, completa todos los campos.'
+        });
+        return;
+      }
+
+      // Check if data has been modified
+      const originalUserName = userNameInput.dataset.originalValue.trim();
+      const originalFullName = fullNameInput.dataset.originalValue.trim();
+
+      if (currentUserName === originalUserName && currentFullName === originalFullName) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se han realizado cambios en los datos del usuario.'
+        });
+        return;
+      }
+
+      // Expresión regular para buscar caracteres especiales
+      const specialCharsRegex = /[&'";`#%;<>\\|$\^~?!@()\[\]{}_\-+=,.:]/;
+
+
+
+      // Si se encuentra un caracter especial, mostrar alerta y no enviar datos
+      if (specialCharsRegex.test(currentUserName) || specialCharsRegex.test(currentFullName)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No puedes ingresar caracteres especiales en los campos.'
+        });
+        return;
+      }
+
+      // If data has been modified and password does not contain spaces, proceed with the update
       const userData = {
-        nombre: document.getElementById('editUserName').value,
-        contrasea: document.getElementById('editFullName').value
+        nombre: currentUserName,
+        contrasea: currentFullName
       };
 
       axios.put(`/users/${userId}`, userData, {
@@ -194,11 +281,10 @@
         .then(function (response) {
           console.log('User updated successfully:', response.data);
           fetchUsers(); // Refresh the user list after update
-          // Limpiar campos del formulario después de editar usuario
-          document.getElementById('editUserId').value = '';
-          document.getElementById('editUserName').value = '';
-          document.getElementById('editFullName').value = '';
-          // Mostrar alerta de éxito con SweetAlert
+          // Clear form fields after editing user
+          userNameInput.value = '';
+          fullNameInput.value = '';
+          // Show success alert with SweetAlert
           Swal.fire({
             icon: 'success',
             title: 'Usuario actualizado',
@@ -207,7 +293,7 @@
         })
         .catch(function (error) {
           console.error('Error updating user:', error);
-          // Mostrar alerta de error con SweetAlert
+          // Show error alert with SweetAlert
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -340,60 +426,298 @@
     });
   </script>
 
-<!-- Footer Start -->
-<div class="container-fluid bg-dark text-light mt-5 wow fadeInUp" data-wow-delay="0.1s">
-  <div class="container">
-    <div class="row gx-5">
-      <div class="col-lg-4 col-md-6 footer-about">
-        <div class="d-flex flex-column align-items-center justify-content-center text-center bg-primary p-3">
-          <a href="#" class="navbar-brand">
-            <h3 class="m-0 text-white"><i class="fa fa-user-tie me-2"></i>Descripción</h3>
-          </a>
-          <p class="mt-2 mb-3">"Manejador de Usuarios" es una aplicación web para gestionar usuarios de manera eficiente.</p>
-        </div>
-      </div>
-      <div class="col-lg-8 col-md-6">
-        <div class="row gx-5">
-          <div class="col-lg-6 col-md-6 pt-3">
-            <div class="section-title  position-relative section-title-sm pb-2 mb-3">
-              <h4 class="text-light mb-0">Contacto</h4>
-            </div>
-            <div class="d-flex flex-column mb-2">
-              <p class="mb-1"><i class="bi bi-geo-alt text-primary me-1"></i>Delicias, Chihuahua, México.</p>
-              <p class="mb-1"><i class="bi bi-envelope-open text-primary me-1"></i>daniel192412012@gmail.com</p>
-              <p class="mb-1"><i class="bi bi-telephone text-primary me-1"></i>+052-639-159-97-45</p>
-            </div>
-          </div>
-          <div class="col-lg-6 col-md-6 pt-3">
-            <div class="section-title position-relative section-title-sm pb-2 mb-3">
-              <h4 class="text-light mb-0">Enlaces</h4>
-            </div>
-            <div class="link-animated d-flex flex-column justify-content-start">
-              <a class="text-light mb-1" href="index.html"><i class="bi bi-arrow-right text-primary me-1"></i>Inicio</a>
-              <a class="text-light mb-1" href="insetar.html"><i class="bi bi-arrow-right text-primary me-1"></i>Insertar</a>
-              <a class="text-light mb-1" href="editar.html"><i class="bi bi-arrow-right text-primary me-1"></i>Editar</a>
-              <a class="text-light mb-1" href="eliminar.html"><i class="bi bi-arrow-right text-primary me-1"></i>Eliminar</a>
-              <a class="text-light mb-1" href="contraseña.html"><i class="bi bi-arrow-right text-primary me-1"></i>Contraseñas</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="container-fluid text-white" style="background: #061429;">
-  <div class="container text-center">
-    <div class="row justify-content-end">
-      <div class="col-lg-8 col-md-6">
-        <div class="d-flex align-items-center justify-content-center" style="height: 50px;">
-          <p class="mb-0">&copy; <a class="text-white border-bottom" href="#">DHO</a>. Todos los derechos reservados © Daniel Hernández Company.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Footer End -->
+  <!-- Insertar un nuevo usuario -->
+  <script>
+    // Function to add a new user
+    document.getElementById('addUserForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const userData = {};
+      let hasSpecialCharacters = false; // Variable para controlar si se encuentran caracteres especiales
 
+      formData.forEach(function (value, key) {
+        // Expresión regular para buscar caracteres especiales
+        const specialCharsRegex = /[&'";`#%;<>\\|$\^~?!@()\[\]{}_\-+=,.:]/;
+
+        // Si se encuentra un caracter especial, activa el indicador
+        if (specialCharsRegex.test(value)) {
+          hasSpecialCharacters = true;
+          return; // Salir del bucle forEach si se encuentra un caracter especial
+        }
+
+        // Añadir valor al objeto userData
+        if (key === 'contraseña') {
+          userData['contrasea'] = value; // Ajuste de nombre de campo
+        } else {
+          userData[key] = value;
+        }
+      });
+
+      // Si se encontraron caracteres especiales, mostrar alerta y no enviar datos
+      if (hasSpecialCharacters) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No puedes ingresar caracteres especiales en los campos.'
+        });
+        return; // Detener la ejecución de la función
+      }
+
+      axios.post('/users', userData, {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      }) // Revisa si la ruta '/users' es correcta
+        .then(function (response) {
+          console.log('User added successfully:', response.data);
+          // Limpiar campos del formulario después de agregar usuario
+          document.getElementById('userName').value = '';
+          document.getElementById('fullName').value = '';
+          // Mostrar alerta de éxito con SweetAlert
+          Swal.fire({
+            icon: 'success',
+            title: 'Usuario agregado',
+            text: 'El usuario ha sido agregado exitosamente.'
+          }).then(function () {
+            // Recargar la página después de la alerta de éxito
+            location.reload();
+          });
+        })
+        .catch(function (error) {
+          console.error('Error adding user:', error);
+          // Mostrar alerta de error con SweetAlert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al agregar el usuario. Por favor, inténtalo de nuevo.'
+          });
+        });
+    });
+  </script>
+
+  <!-- Editar y eliminar un usuario -->
+  <script>
+    // Function to fetch and display users
+    function fetchUsers() {
+      axios.get('/users', {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      })
+        .then(function (response) {
+          const users = response.data;
+          const userList = document.getElementById('userList');
+          userList.innerHTML = '';
+          users.forEach(function (user) {
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.innerHTML = `
+          <strong>ID:</strong> ${user.id} - 
+          <strong>Nombre:</strong> ${user.nombre} - 
+          <strong>Contraseña:</strong> ********  -
+          <button class="btn btn-danger btn-sm" onclick="confirmDeleteUser(${user.id})">Eliminar</button>
+          <button class="btn btn-primary btn-sm" onclick="editUser(${user.id})">Editar</button>
+        `;
+            userList.appendChild(li);
+          });
+        })
+        .catch(function (error) {
+          console.error('Error fetching users:', error);
+        });
+    }
+
+    // Function to delete a user
+    function deleteUser(userId) {
+      axios.delete(`/users/${userId}`, {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      })
+        .then(function (response) {
+          console.log('User deleted successfully:', response.data);
+          fetchUsers();
+        })
+        .catch(function (error) {
+          console.error('Error deleting user:', error);
+        });
+    }
+
+    // Function to confirm delete user action with SweetAlert
+    function confirmDeleteUser(userId) {
+      // Muestra una ventana emergente solicitando la contraseña del usuario
+      Swal.fire({
+        title: 'Confirmar contraseña',
+        html: '<input id="password" type="password" class="swal2-input" placeholder="Contraseña">',
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+          const password = Swal.getPopup().querySelector('#password').value;
+          return password;
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteUser(userId);
+        }
+      });
+    }
+
+    // Function to edit a user
+    function editUser(userId) {
+      // Muestra una ventana emergente solicitando la contraseña del usuario
+      Swal.fire({
+        title: 'Confirmar contraseña',
+        html: '<input id="password" type="password" class="swal2-input" placeholder="Contraseña">',
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+          const password = Swal.getPopup().querySelector('#password').value;
+          return password;
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Una vez que se confirma la contraseña, se puede proceder a la edición del usuario
+          const enteredPassword = result.value;
+          // Enviar la contraseña al servidor para su validación
+          axios.post(`/users/confirm-password/${userId}`, { password: enteredPassword }, {
+            headers: {
+              'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+            }
+          }) // Cambiada la ruta para enviar la contraseña
+            .then(function (response) {
+              // Si la contraseña es correcta, se puede proceder a la edición del usuario
+              fetchUserForEdit(userId); // Función para obtener los datos del usuario para editar
+            })
+            .catch(function (error) {
+              console.error('Error de verificación de contraseña:', error);
+              // Mostrar un mensaje de error si la contraseña es incorrecta
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Contraseña incorrecta. Por favor, inténtalo de nuevo.'
+              });
+            });
+        }
+      });
+    }
+
+    // Función para obtener los datos del usuario para editar
+    function fetchUserForEdit(userId) {
+      axios.get(`/users/${userId}`, {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      })
+        .then(function (response) {
+          const user = response.data[0];
+          // Rellenar los campos del formulario de edición con los datos del usuario
+          document.getElementById('editUserId').value = user.id;
+          document.getElementById('editUserName').value = user.nombre;
+          document.getElementById('editFullName').value = user.contrasea;
+          // Set original values for comparison
+          document.getElementById('editUserName').dataset.originalValue = user.nombre;
+          document.getElementById('editFullName').dataset.originalValue = user.contrasea;
+        })
+        .catch(function (error) {
+          console.error('Error obteniendo datos del usuario para editar:', error);
+          // Mostrar un mensaje de error si hay algún problema al obtener los datos del usuario
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al obtener los datos del usuario para editar. Por favor, inténtalo de nuevo.'
+          });
+        });
+    }
+
+    // Función para verificar si ambos campos han sido modificados
+    function validateFields() {
+      const userName = document.getElementById('editUserName').value;
+      const fullName = document.getElementById('editFullName').value;
+
+      const userNameOriginal = document.getElementById('editUserName').dataset.originalValue;
+      const fullNameOriginal = document.getElementById('editFullName').dataset.originalValue;
+
+      if (userName === userNameOriginal && fullName === fullNameOriginal) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No has modificado ningún campo.'
+        });
+        return false;
+      } else if (userName === userNameOriginal || fullName === fullNameOriginal) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Debes modificar ambos campos (nombre de usuario y contraseña).'
+        });
+        return false;
+      }
+
+      return true;
+    }
+
+    // Initial fetch of users
+    fetchUsers();
+  </script>
+
+  <!-- Footer Start -->
+  <div class="container-fluid bg-dark text-light mt-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container">
+      <div class="row gx-5">
+        <div class="col-lg-4 col-md-6 footer-about">
+          <div class="d-flex flex-column align-items-center justify-content-center text-center bg-primary p-3">
+            <a href="#" class="navbar-brand">
+              <h3 class="m-0 text-white"><i class="fa fa-user-tie me-2"></i>Descripción</h3>
+            </a>
+            <p class="mt-2 mb-3">"Manejador de Usuarios" es una aplicación web para gestionar usuarios de manera
+              eficiente.</p>
+          </div>
+        </div>
+        <div class="col-lg-8 col-md-6">
+          <div class="row gx-5">
+            <div class="col-lg-6 col-md-6 pt-3">
+              <div class="section-title  position-relative section-title-sm pb-2 mb-3">
+                <h4 class="text-light mb-0">Contacto</h4>
+              </div>
+              <div class="d-flex flex-column mb-2">
+                <p class="mb-1"><i class="bi bi-geo-alt text-primary me-1"></i>Delicias, Chihuahua, México.</p>
+                <p class="mb-1"><i class="bi bi-envelope-open text-primary me-1"></i>daniel192412012@gmail.com</p>
+                <p class="mb-1"><i class="bi bi-telephone text-primary me-1"></i>+052-639-159-97-45</p>
+              </div>
+            </div>
+            <div class="col-lg-6 col-md-6 pt-3">
+              <div class="section-title position-relative section-title-sm pb-2 mb-3">
+                <h4 class="text-light mb-0">Enlaces</h4>
+              </div>
+              <div class="link-animated d-flex flex-column justify-content-start">
+                <a class="text-light mb-1" href="index.html"><i
+                    class="bi bi-arrow-right text-primary me-1"></i>Inicio</a>
+                <a class="text-light mb-1" href="foro.html"><i
+                    class="bi bi-arrow-right text-primary me-1"></i>Foro</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid text-white" style="background: #061429;">
+    <div class="container text-center">
+      <div class="row justify-content-end">
+        <div class="col-lg-8 col-md-6">
+          <div class="d-flex align-items-center justify-content-center" style="height: 50px;">
+            <p class="mb-0">&copy; <a class="text-white border-bottom" href="#">DHO</a>. Todos los derechos reservados ©
+              Daniel Hernández Company.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Footer End -->
+
+  <!-- SweetAlert Script -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
   <!-- JavaScript Libraries -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
