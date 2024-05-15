@@ -1,24 +1,15 @@
 const express = require('express');
-const cors = require('cors');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
 const routeConfig = require('../routes/routes.js');
-const fs = require('fs');
-const https = require('https'); // Importa el módulo https de Node.js
 const PORT = process.env.PORT || 3003; // Cambia 3003 por el puerto que quieras
 const app = express();
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../swagger.json'); // Importa tu archivo de definición Swagger
+const http = require('http');
+const socketIO = require('socket.io');
+const server = http.createServer(app);
+const io = socketIO(server);
 
-// Configura CORS para permitir solo solicitudes desde tu dominio de Azure
-// const corsOptions = {
- //    origin: 'https://manejador.azurewebsites.net'
- //  };
-  
-  // Aplica CORS con las opciones personalizadas
- //  app.use(cors(corsOptions));
-  
 
 // Configura la ruta para tu archivo HTML personalizado
 app.get('/public/swaggerh', (req, res) => {
@@ -53,23 +44,39 @@ app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
-// Configuración de HTTPS
-//const options = {
-   // key: fs.readFileSync('ruta/a/tu/llave/privada.key'),
-   // cert: fs.readFileSync('SSL/DigiCertGlobalRootCA.crt'),
-  //  ca: [
- //       fs.readFileSync('SSL/DigiCert_Global_Root_G2.crt'),
-  //      fs.readFileSync('SSL/Microsoft_RSA_Root_Certificate_Authority_2017.crt')
-  //  ]
-//};
-
-// Crear servidor HTTPS
-//https.createServer(options, app).listen(PORT, () => {
-//    console.log(`Server running at http://localhost:${PORT}/`);
-//});
 
 //Configuracion para el socket
+// Variable para llevar el conteo
+let contadorConexiones = 0;
 
+// Objeto de mensaje inicial
+const initialMessage = {
+    id: 1,
+    texto: "¡Hola cliente! Soy un mensaje del servidor.",
+    autor: "Daniel Hernández Olague"
+};
+
+// Inicializar el arreglo de mensajes con el mensaje inicial
+const messages = [initialMessage];
+
+// Emitir un evento 'message' de vuelta al cliente cuando se conecte
+io.on('connection', function (socket) {
+    contadorConexiones++; // Incrementar el contador
+    console.log('Alguien se ha conectado con socket');
+    console.log('Número de conexiones: ' + contadorConexiones); // Imprimir el contador
+    
+    // Emitir el mensaje inicial al cliente cuando se conecta
+    socket.emit("message", messages);
+
+    // Manejar el evento 'nuevo-message' enviado por el cliente
+    socket.on("new-message", function(data) {
+        // Agregar el nuevo mensaje al arreglo de mensajes
+        messages.push(data);
+        
+        // Emitir el arreglo de mensajes actualizado de vuelta a todos los clientes
+        io.emit('respuesta', messages);
+    });
+});
 
 
 
