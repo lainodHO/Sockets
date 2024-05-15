@@ -11,7 +11,7 @@ const publicPath = path.join(__dirname, '..', 'public');
 app.use(express.static(publicPath));
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
+    res.sendFile(path.join(publicPath, 'foro.html'));
 });
 
 // Variable para llevar el conteo
@@ -48,7 +48,7 @@ io.on('connection', function (socket) {
 
 
 server.listen(PORT, () => {
-    console.log(`Server running at http://192.168.1.121:${PORT}/`);
+    console.log(`Server running at http://localhost:${PORT}/`);
 });
 
 module.exports = app;
