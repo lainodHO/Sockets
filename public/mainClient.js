@@ -25,13 +25,16 @@ socket.on('respuesta', function(messages){
   });
 });
 
-// Función para enviar un nuevo mensaje al servidor
+//<!-- Enviar el nombre de usuario junto con el mensaje al servidor -->
 function addMessage(e){
+  var loggedInUser = document.getElementById('loggedInUser').textContent;
+  var username = loggedInUser.trim(); // Obtener solo el nombre de usuario
   var payload = {
-      autor: document.getElementById('username').value,
+      autor: username, // Enviar solo el nombre de usuario
       texto: document.getElementById('texto').value
   };
   socket.emit('new-message', payload);
   document.getElementById('texto').value = ''; // Limpiar el campo de texto después de enviar el mensaje
   return false; // Para evitar que el formulario se envíe
 }
+

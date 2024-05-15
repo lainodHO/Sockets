@@ -90,13 +90,35 @@
   <br>
   <br>
   <br>
+  <!-- agregar usuarios  -->
+  <div class="container mt-5">
+    <!-- Add User Form -->
+    <h2>Agregar Usuario</h2>
+    <form id="addUserForm">
+      <div class="form-group">
+        <label for="userName">Nombre:</label>
+        <br>
+        <input type="text" class="form-control" id="userName" name="nombre" required>
+      </div>
+
+      <div class="form-group">
+        <label for="fullName">Contraseña:</label>
+        <input type="password" class="form-control" id="fullName" name="contraseña" required>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-primary">Agregar Usuario</button>
+    </form>
+    <hr>
+    <br>
+  </div>
+
   <!-- Eliminar, editarusuarios y filtrar  -->
   <div class="container mt-5">
-    <h1>Manejador de Usuario</h1>
+    <h1>Manejador de Usuarios</h1>
     <hr>
-    <h2>Tu Usuario</h2>
+    <h2>Lista de Usuarios</h2>
     <!-- Input para buscar usuarios, con el nombre del usuario que inició sesión -->
-    <input type="text" id="searchInput" class="form-control mb-3" required readonly>
+    <input type="text" id="searchInput" class="form-control mb-3">
     <ul id="userList" class="list-group">
       <li class="list-group-item">Usuario 1</li>
       <li class="list-group-item">Usuario 2</li>
@@ -109,6 +131,7 @@
 
   <!-- Campos para editar -->
   <div class="container mt-5">
+    <h1>Manejador de Usuarios</h1>
     <!-- Edit User Form -->
     <h2>Editar Usuario</h2>
     <form id="editUserForm">
@@ -143,6 +166,39 @@
 
     // Agregar el mensaje de bienvenida
     welcomeMessageElement.textContent = "Bienvenido";
+  </script>
+
+  <!-- SweetAlert2 JS -->
+  <script>
+    // Función para mostrar la ventana emergente de autorización
+    function mostrarVentanaEmergente() {
+      Swal.fire({
+        title: "Autorización",
+        text: "Por favor, ingresa tus credenciales:",
+        input: "password", // Cambiado a input de tipo "password"
+        inputAttributes: {
+          placeholder: "Usuario",
+          id: "usuario"
+        },
+        showCancelButton: true,
+        confirmButtonText: "Enviar",
+        cancelButtonText: "Cancelar",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false
+      }).then((result) => {
+        // Verificar credenciales
+        if (result.isConfirmed && result.value === "Daniel") {
+          Swal.fire("¡Autorización exitosa!", "", "success");
+        } else {
+          // Mostrar la ventana emergente nuevamente
+          mostrarVentanaEmergente();
+        }
+      });
+    }
+
+    // Llamar a la función para mostrar la ventana emergente al cargar la página
+    window.onload = mostrarVentanaEmergente;
   </script>
 
 
@@ -303,31 +359,19 @@
     document.addEventListener("DOMContentLoaded", function () {
       const searchInput = document.getElementById("searchInput");
       const userList = document.getElementById("userList").getElementsByTagName("li");
-      const loggedInUser = localStorage.getItem('loggedInUser').toLowerCase(); // Obtener el usuario que ha iniciado sesión
-
-      // Mostrar el nombre de usuario del usuario que ha iniciado sesión en el campo de búsqueda al cargar la página
-      searchInput.value = loggedInUser;
-
-      // Filtrar automáticamente la lista de usuarios al cargar la página
-      filterUserList();
 
       searchInput.addEventListener("input", function () {
-        filterUserList();
-      });
-
-      function filterUserList() {
-        const searchTerm = searchInput.value.toLowerCase();
+        const searchTerm = this.value.toLowerCase();
 
         Array.from(userList).forEach(function (user) {
           const userName = user.textContent.toLowerCase();
-          // Si el nombre de usuario coincide con el término de búsqueda O es igual al usuario que ha iniciado sesión, mostrar el usuario
-          if (userName.includes(searchTerm) || userName === loggedInUser) {
+          if (userName.includes(searchTerm)) {
             user.style.display = "block";
           } else {
             user.style.display = "none";
           }
         });
-      }
+      });
     });
   </script>
 
@@ -431,6 +475,76 @@
     // Función para mostrar la ventana emergente de inicio de sesión al cargar la página
     window.addEventListener('DOMContentLoaded', function () {
       checkLoginStatus(); // Verifica el estado de inicio de sesión cuando se carga la página
+    });
+  </script>
+
+
+  <!-- Insertar un nuevo usuario -->
+  <script>
+    // Function to add a new user
+    document.getElementById('addUserForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+      const userData = {};
+      let hasSpecialCharacters = false; // Variable para controlar si se encuentran caracteres especiales
+
+      formData.forEach(function (value, key) {
+        // Expresión regular para buscar caracteres especiales
+        const specialCharsRegex = /[&'";`#%;<>\\|$\^~?!@()\[\]{}_\-+=,.:]/;
+
+        // Si se encuentra un caracter especial, activa el indicador
+        if (specialCharsRegex.test(value)) {
+          hasSpecialCharacters = true;
+          return; // Salir del bucle forEach si se encuentra un caracter especial
+        }
+
+        // Añadir valor al objeto userData
+        if (key === 'contraseña') {
+          userData['contrasea'] = value; // Ajuste de nombre de campo
+        } else {
+          userData[key] = value;
+        }
+      });
+
+      // Si se encontraron caracteres especiales, mostrar alerta y no enviar datos
+      if (hasSpecialCharacters) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No puedes ingresar caracteres especiales en los campos.'
+        });
+        return; // Detener la ejecución de la función
+      }
+
+      axios.post('/users', userData, {
+        headers: {
+          'Authorization': localStorage.getItem('accessToken') // Obtener el token del localStorage
+        }
+      }) // Revisa si la ruta '/users' es correcta
+        .then(function (response) {
+          console.log('User added successfully:', response.data);
+          // Limpiar campos del formulario después de agregar usuario
+          document.getElementById('userName').value = '';
+          document.getElementById('fullName').value = '';
+          // Mostrar alerta de éxito con SweetAlert
+          Swal.fire({
+            icon: 'success',
+            title: 'Usuario agregado',
+            text: 'El usuario ha sido agregado exitosamente.'
+          }).then(function () {
+            // Recargar la página después de la alerta de éxito
+            location.reload();
+          });
+        })
+        .catch(function (error) {
+          console.error('Error adding user:', error);
+          // Mostrar alerta de error con SweetAlert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un problema al agregar el usuario. Por favor, inténtalo de nuevo.'
+          });
+        });
     });
   </script>
 

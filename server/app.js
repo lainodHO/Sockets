@@ -48,14 +48,12 @@ app.use((req, res) => {
 //Configuracion para el socket
 // Variable para llevar el conteo
 let contadorConexiones = 0;
-
 // Objeto de mensaje inicial
 const initialMessage = {
     id: 1,
-    texto: "¡Hola cliente! Soy un mensaje del servidor.",
-    autor: "Daniel Hernández Olague"
+    texto: "¡Hola a Todo Mundo! Soy un mensaje del servidor.",
+    autor: "Servidor"
 };
-
 // Inicializar el arreglo de mensajes con el mensaje inicial
 const messages = [initialMessage];
 
@@ -68,16 +66,22 @@ io.on('connection', function (socket) {
     // Emitir el mensaje inicial al cliente cuando se conecta
     socket.emit("message", messages);
 
-    // Manejar el evento 'nuevo-message' enviado por el cliente
-    socket.on("new-message", function(data) {
-        // Agregar el nuevo mensaje al arreglo de mensajes
-        messages.push(data);
-        
-        // Emitir el arreglo de mensajes actualizado de vuelta a todos los clientes
-        io.emit('respuesta', messages);
-    });
+   // Manejar el evento 'new-message' enviado por el cliente
+socket.on("new-message", function(data) {
+    // Modificar la estructura del mensaje para incluir el nombre de usuario
+    const newMessage = {
+        autor: data.autor,
+        texto: data.texto
+    };
+    
+    // Agregar el nuevo mensaje al arreglo de mensajes
+    messages.push(newMessage);
+    
+    // Emitir el arreglo de mensajes actualizado de vuelta a todos los clientes
+    io.emit('respuesta', messages);
+   
 });
-
+});
 
 
 // Crear servidor HTTPS
