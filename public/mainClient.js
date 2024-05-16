@@ -1,4 +1,5 @@
 // main.js (cliente)
+// Conexión al Servidor WebSocket
 var socket = io.connect('http://localhost:3003/');
 
   // Escuchar un evento del servidor
@@ -37,4 +38,22 @@ function addMessage(e){
   document.getElementById('texto').value = ''; // Limpiar el campo de texto después de enviar el mensaje
   return false; // Para evitar que el formulario se envíe
 }
+
+// Función para manejar el inicio de sesión
+function login(username, password) {
+    socket.emit('login', { username: username, password: password });
+}
+
+// Escuchar la respuesta del servidor al inicio de sesión
+socket.on('login-response', function(response) {
+  if (response.success) {
+      // Inicio de sesión exitoso, actualizar la interfaz de usuario
+      // Por ejemplo, redirigir al usuario a otra página
+      window.location.href = '/index.html';
+  } else {
+      // Inicio de sesión fallido, manejar de acuerdo al error
+      // Por ejemplo, mostrar un mensaje de error al usuario
+      alert('Inicio de sesión fallido. Por favor, verifica tus credenciales e inténtalo de nuevo.');
+  }
+});
 

@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
+const cors = require('cors');
 const routeConfig = require('../routes/routes.js');
 const PORT = process.env.PORT || 3003; // Cambia 3003 por el puerto que quieras
 const app = express();
@@ -9,6 +10,17 @@ const http = require('http');
 const socketIO = require('socket.io');
 const server = http.createServer(app);
 const io = socketIO(server);
+
+
+
+// Configura CORS para permitir solo solicitudes desde tu dominio de Azure
+const corsOptions = {
+    origin: 'http://localhost:3003/'
+  };
+  
+  // Aplica CORS con las opciones personalizadas
+  app.use(cors(corsOptions));
+  
 
 
 // Configura la ruta para tu archivo HTML personalizado
@@ -67,7 +79,7 @@ io.on('connection', function (socket) {
     socket.emit("message", messages);
 
    // Manejar el evento 'new-message' enviado por el cliente
-socket.on("new-message", function(data) {
+    socket.on("new-message", function(data) {
     // Modificar la estructura del mensaje para incluir el nombre de usuario
     const newMessage = {
         autor: data.autor,
@@ -81,6 +93,18 @@ socket.on("new-message", function(data) {
     io.emit('respuesta', messages);
    
 });
+
+// Manejar el evento de inicio de sesión
+socket.on('login', function(credentials) {
+    // Verificar las credenciales y enviar respuesta al cliente
+    if (credentials.username === validUsername && credentials.password === validPassword) {
+        socket.emit('login-response', { success: true, message: 'Login successful' });
+    } else {
+        socket.emit('login-response', { success: false, message: 'Invalid username or password' });
+    }
+});
+
+
 });
 
 
