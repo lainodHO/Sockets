@@ -1,6 +1,6 @@
 // main.js (cliente)
 // Conexión al Servidor WebSocket
-var socket = io.connect('http://localhost:3003/');
+var socket = io.connect('http://dhoubuntu.fullstack.com.mx/:3003/');
 
   // Escuchar un evento del servidor
   socket.on('respueta', function (mensaje) {
