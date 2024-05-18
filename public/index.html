@@ -94,9 +94,9 @@
   <div class="container mt-5">
     <h1>Manejador de Usuario</h1>
     <hr>
-    <h2>Tu Usuario</h2>
+    <h2>Busca tu Usuario</h2>
     <!-- Input para buscar usuarios, con el nombre del usuario que inició sesión -->
-    <input type="text" id="searchInput" class="form-control mb-3" required readonly>
+    <input type="text" id="searchInput" class="form-control mb-3" >
     <ul id="userList" class="list-group">
       <li class="list-group-item">Usuario 1</li>
       <li class="list-group-item">Usuario 2</li>
@@ -298,38 +298,26 @@
   </script>
 
 
-  <!-- Filtros  -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const searchInput = document.getElementById("searchInput");
-      const userList = document.getElementById("userList").getElementsByTagName("li");
-      const loggedInUser = localStorage.getItem('loggedInUser').toLowerCase(); // Obtener el usuario que ha iniciado sesión
+ <!-- Filtros  -->
+ <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const userList = document.getElementById("userList").getElementsByTagName("li");
 
-      // Mostrar el nombre de usuario del usuario que ha iniciado sesión en el campo de búsqueda al cargar la página
-      searchInput.value = loggedInUser;
+    searchInput.addEventListener("input", function () {
+      const searchTerm = this.value.toLowerCase();
 
-      // Filtrar automáticamente la lista de usuarios al cargar la página
-      filterUserList();
-
-      searchInput.addEventListener("input", function () {
-        filterUserList();
+      Array.from(userList).forEach(function (user) {
+        const userName = user.textContent.toLowerCase();
+        if (userName.includes(searchTerm)) {
+          user.style.display = "block";
+        } else {
+          user.style.display = "none";
+        }
       });
-
-      function filterUserList() {
-        const searchTerm = searchInput.value.toLowerCase();
-
-        Array.from(userList).forEach(function (user) {
-          const userName = user.textContent.toLowerCase();
-          // Si el nombre de usuario coincide con el término de búsqueda O es igual al usuario que ha iniciado sesión, mostrar el usuario
-          if (userName.includes(searchTerm) || userName === loggedInUser) {
-            user.style.display = "block";
-          } else {
-            user.style.display = "none";
-          }
-        });
-      }
     });
-  </script>
+  });
+</script>
 
 
   <!-- Inicio de sesion  -->
@@ -419,12 +407,7 @@
       } else {
         // Si el usuario ha iniciado sesión, mostrar su nombre en el navbar
         const loggedInUser = localStorage.getItem('loggedInUser');
-        document.getElementById('loggedInUser').textContent = `${loggedInUser}`;
-        // Si el usuario ha iniciado sesión, mostrar su nombre como un elemento dentro del input
-
-        loggedInUserName.textContent = loggedInUser;
-        const searchInput = document.getElementById('searchInput');
-        searchInput.insertAdjacentElement('beforeend', loggedInUserName);
+        document.getElementById('loggedInUser').textContent = `Bienvenido, ${loggedInUser}`;
       }
     }
 

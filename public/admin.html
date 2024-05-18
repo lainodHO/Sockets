@@ -168,39 +168,102 @@
     welcomeMessageElement.textContent = "Bienvenido";
   </script>
 
-  <!-- SweetAlert2 JS -->
- <!-- <script>
-    // Función para mostrar la ventana emergente de autorización
-    function mostrarVentanaEmergente() {
+  <!-- Inicio de sesion  -->
+  <script>
+    // Función para cerrar sesión
+    function logout() {
+      // Elimina la información de inicio de sesión almacenada en localStorage
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('accessToken'); // Elimina el token de acceso
+      localStorage.removeItem('loggedInUser'); // Elimina el nombre de usuario
+      // Notificar al usuario que se cerró la sesión
       Swal.fire({
-        title: "Autorización",
-        text: "Por favor, ingresa tus credenciales:",
-        input: "password", // Cambiado a input de tipo "password"
-        inputAttributes: {
-          placeholder: "Usuario",
-          id: "usuario"
-        },
+        icon: 'success',
+        title: 'Sesión cerrada',
+        text: 'Has cerrado sesión exitosamente.',
+        allowOutsideClick: false, // Evita que el usuario cierre la alerta al hacer clic fuera de ella
+        confirmButtonText: 'Iniciar sesión nuevamente'
+      }).then(() => {
+        // Después de cerrar sesión, redirige a la página de inicio
+        window.location.href = '/index.html';
+      });
+    }
+
+    // Función para mostrar la ventana emergente de inicio de sesión
+    function showLoginPopup() {
+      Swal.fire({
+        title: 'Inicio de Sesión',
+        html:
+          '<input id="username" class="swal2-input" placeholder="Nombre de usuario">' +
+          '<input id="password" type="password" class="swal2-input" placeholder="Contraseña">',
+        focusConfirm: false,
         showCancelButton: true,
-        confirmButtonText: "Enviar",
-        cancelButtonText: "Cancelar",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false
+        confirmButtonText: 'Iniciar sesión',
+        cancelButtonText: 'Cancelar',
+        allowOutsideClick: false, // Evita que la ventana se cierre al hacer clic fuera de ella
+        preConfirm: () => {
+          const username = Swal.getPopup().querySelector('#username').value;
+          const password = Swal.getPopup().querySelector('#password').value;
+          return { username: username, password: password };
+        }
       }).then((result) => {
-        // Verificar credenciales
-        if (result.isConfirmed && result.value === "Daniel") {
-          Swal.fire("¡Autorización exitosa!", "", "success");
-        } else {
-          // Mostrar la ventana emergente nuevamente
-          mostrarVentanaEmergente();
+        if (result.isConfirmed) {
+          // Envía las credenciales al servidor para validar la sesión
+          axios.post('/login', result.value)
+            .then(function (response) {
+              console.log('Login successful:', response.data);
+              // Almacena el token de autenticación en localStorage
+              localStorage.setItem('accessToken', response.data.token);
+              // Marca al usuario como autenticado
+              localStorage.setItem('isLoggedIn', true); // Almacena el estado de inicio de sesión en localStorage
+              localStorage.setItem('loggedInUser', result.value.username); // Almacena el nombre de usuario en localStorage
+              // Muestra un mensaje de éxito y cierra la ventana emergente
+              Swal.fire({
+                icon: 'success',
+                title: 'Inicio de sesión exitoso',
+                showConfirmButton: false,
+                timer: 1500 // Cierra automáticamente la ventana emergente después de 1.5 segundos
+              }).then(() => {
+                // Redirige a la página de inicio después del inicio de sesión exitoso
+                window.location.href = '/index.html';
+              });
+            })
+            .catch(function (error) {
+              console.error('Error durante el inicio de sesión:', error.response);
+              // Muestra un mensaje de error si el inicio de sesión falla
+              Swal.fire({
+                icon: 'error',
+                title: 'Error de inicio de sesión',
+                text: 'Nombre de usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.'
+              }).then(() => {
+                // Vuelve a mostrar la ventana emergente de inicio de sesión
+                showLoginPopup();
+              });
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          // Si el usuario cancela el inicio de sesión, redirige a la página de inicio
+          window.location.href = '/index.html';
         }
       });
     }
 
-    // Llamar a la función para mostrar la ventana emergente al cargar la página
-    window.onload = mostrarVentanaEmergente;
-  </script> -->
+    // Función para verificar si el usuario ha iniciado sesión
+    function checkLoginStatus() {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        showLoginPopup(); // Si el usuario no ha iniciado sesión, muestra la ventana emergente de inicio de sesión
+      } else {
+        // Si el usuario ha iniciado sesión, mostrar su nombre en el navbar
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        document.getElementById('loggedInUser').textContent = `Bienvenido, ${loggedInUser}`;
+      }
+    }
 
+    // Función para mostrar la ventana emergente de inicio de sesión al cargar la página
+    window.addEventListener('DOMContentLoaded', function () {
+      checkLoginStatus(); // Verifica el estado de inicio de sesión cuando se carga la página
+    });
+  </script>
 
   <!-- gestión de usuarios  -->
   <script>

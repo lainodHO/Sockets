@@ -15,12 +15,11 @@ const io = socketIO(server);
 
 // Configura CORS para permitir solo solicitudes desde tu dominio de Azure
 const corsOptions = {
-    origin: ['https://manejador.azurewebsites.net', 'http://dhoubuntu.fullstack.com.mx/:3003/'],
+    origin: ['https://manejador.azurewebsites.net', 'http://dhoubuntu.fullstack.com.mx:3003','http://dhoubuntu.fullstack.com.mx'],
   };
   // Aplica CORS con las opciones personalizadas
   app.use(cors(corsOptions));
   
-
 
 // Configura la ruta para tu archivo HTML personalizado
 app.get('/public/swaggerh', (req, res) => {
@@ -56,12 +55,20 @@ app.use((req, res) => {
 });
 
 
+//Esto es para las cookies de terceros
+app.use((req, res, next) => {
+    res.cookie('mycookie', 'value', { sameSite: 'None', secure: true });
+    next();
+  });
+  
 
 // Crear servidor HTTPS
  // Cambia 3003 por el puerto que quieras
- server.listen(PORT, () => {
-     console.log(`Server running at https://manejador.azurewebsites.net:${PORT}/`);
- });
+ //server.listen(PORT, () => {
+   //  console.log(`Server running at https://manejador.azurewebsites.net:${PORT}/`);
+ //});
  
-
+ server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}/`);
+});
 module.exports = app; // Exporta app para que pueda ser utilizado en otros archivos

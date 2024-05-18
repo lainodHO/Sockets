@@ -202,7 +202,7 @@
       } else {
         // Si el usuario ha iniciado sesión, mostrar su nombre en el navbar
         const loggedInUser = localStorage.getItem('loggedInUser');
-        document.getElementById('loggedInUser').textContent = `  ${loggedInUser}`;
+        document.getElementById('loggedInUser').textContent = `Bienvenido, ${loggedInUser}`;
       }
     }
 
@@ -211,6 +211,7 @@
       checkLoginStatus(); // Verifica el estado de inicio de sesión cuando se carga la página
     });
   </script>
+
   <!-- Agregar el mensaje de bienvenida -->
   <script>
     // Obtener el elemento del DOM donde se mostrará el mensaje de bienvenida
